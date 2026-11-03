@@ -6,9 +6,7 @@ RUN zypper --non-interactive refresh && \
     zypper --non-interactive install \
     gcc gcc-c++ make pkgconf-pkg-config \
     curl file wget \
-    webkitgtk3-devel \
-    gtk3-devel \
-    libayatana-appindicator3-devel \
+    gtk4-devel \
     librsvg-devel \
     libopenssl-3-devel \
     dbus-1-devel \
@@ -44,8 +42,7 @@ COPY . .
 RUN echo "%vendor lullabyX" >> /root/.rpmmacros
 
 # Patch RPM dependency names for openSUSE
-RUN sed -i 's/"webkit2gtk4\.1"/"libwebkit2gtk-4_1-0"/' src-tauri/tauri.conf.json \
-    && sed -i 's/"libappindicator-gtk3"/"libayatana-appindicator3-1"/' src-tauri/tauri.conf.json \
+RUN sed -i 's/"gtk4"/"libgtk-4-1"/' src-tauri/tauri.conf.json \
     && sed -i 's/"gstreamer1"/"gstreamer"/' src-tauri/tauri.conf.json \
     && sed -i 's/"gstreamer1-plugins-base"/"gstreamer-plugins-base"/' src-tauri/tauri.conf.json \
     && sed -i 's/"gstreamer1-plugins-good"/"gstreamer-plugins-good"/' src-tauri/tauri.conf.json \

@@ -32,7 +32,7 @@ echo "────────────────────────�
 # Install runtime deps first (pacman -U doesn't resolve from repos),
 # then install the package itself.
 DISTROS=(
-    "Arch Linux|archlinux:latest|pacman -Syu --noconfirm && pacman -S --noconfirm webkit2gtk-4.1 gtk3 gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-libav libsecret alsa-lib librsvg libayatana-appindicator xorg-server-xvfb dbus xdotool && pacman -U --noconfirm /pkg/*.pkg.tar.zst"
+    "Arch Linux|archlinux:latest|pacman -Syu --noconfirm && pacman -S --noconfirm gtk4 gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-libav libsecret alsa-lib librsvg xorg-server-xvfb dbus xdotool && pacman -U --noconfirm /pkg/*.pkg.tar.zst"
 )
 
 # Write native-package test script with pacman registry check

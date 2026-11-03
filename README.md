@@ -1,3 +1,10 @@
+> [!NOTE]
+> **This is an unofficial fork of [SONE](https://github.com/LullabyX/sone) that replaces the WebKitGTK webview with an embedded Chromium (CEF) runtime.** It exists to work around the WebKitGTK rendering bugs that affect Linux systems with NVIDIA GPUs (blank/corrupt pages, tearing, stuttering). The GUI now runs on Chromium instead of WebKitGTK.
+>
+> The migration is done with [Tauri v3](https://v3.tauri.app/) (alpha) and its new [`tauri-runtime-cef`](https://v3.tauri.app/develop/cef/) runtime, which bundles the Chromium Embedded Framework instead of relying on the system's WebKitGTK. Everything else (audio pipeline, tray, MPRIS, etc.) stays as upstream.
+>
+> This fork was made for personal use, but anyone who runs into the same NVIDIA issues is welcome to use it. No support is provided — for everything else, refer to the upstream project.
+
 <div align="center">
   <img src="sone.png" alt="SONE" width="150">
   <h1>SONE</h1>

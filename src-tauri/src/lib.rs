@@ -617,9 +617,6 @@ impl AppState {
     }
 }
 
-#[cfg(target_os = "linux")]
-mod webview_proxy_auth;
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // File logger setup. Must happen before Tauri builds so early log
@@ -638,6 +635,14 @@ pub fn run() {
     // the end of `run()`. flexi_logger flushes the log file on drop, so
     // the handle must outlive the Tauri event loop.
     tauri::Builder::default()
+        .runtime(
+            tauri_runtime_cef::Cef::default()
+                // The app never captures microphone or camera; this is also
+                // what keeps the PKCE login window from asking for media
+                // devices (DataDome enumerates them).
+                .profile_preference("hardware.audio_capture_enabled", false)
+                .profile_preference("hardware.video_capture_enabled", false),
+        )
         .plugin(tauri_plugin_opener::init())
         .plugin(
             tauri_plugin_window_state::Builder::default()
@@ -666,9 +671,6 @@ pub fn run() {
             }
 
             app.manage(AppState::new(app.handle().clone()));
-
-            #[cfg(target_os = "linux")]
-            webview_proxy_auth::install(app.handle());
 
             // Start MCP server in background (if enabled). ensure_mcp_started
             // holds the mcp_handle lock across the start to stay race-free.
@@ -850,26 +852,6 @@ pub fn run() {
                     let _ = window.set_icon(icon);
                 }
 
-                // WebKitGTK rendering settings for Linux
-                #[cfg(target_os = "linux")]
-                {
-                    use webkit2gtk::{SettingsExt, WebViewExt};
-                    window
-                        .with_webview(|webview| {
-                            let wv = webview.inner();
-                            if let Some(settings) = wv.settings() {
-                                // Use OnDemand (default) — Always can cause severe lag
-                                // on dual-GPU systems (NVIDIA + iGPU) with WebKitGTK
-                                settings.set_hardware_acceleration_policy(
-                                    webkit2gtk::HardwareAccelerationPolicy::OnDemand,
-                                );
-                                settings.set_enable_webgl(true);
-                                settings.set_enable_smooth_scrolling(true);
-                            }
-                        })
-                        .ok();
-                }
-
                 // tauri.conf.json sets decorations: false, so the window is
                 // born without GTK CSD. Only re-enable native chrome if the
                 // user has explicitly opted in via the escape-hatch toggle.
@@ -947,22 +929,6 @@ pub fn run() {
                         let _ = window.app_handle().emit_to("main", "miniplayer-closed", ());
                     } else if window.label() == "pkce-login" {
                         commands::auth::on_pkce_window_closed(window.app_handle());
-                    }
-                }
-                #[cfg(target_os = "linux")]
-                tauri::WindowEvent::Focused(true) => {
-                    if window.label() == "miniplayer" {
-                        if let Some(ww) = window.app_handle().get_webview_window("miniplayer") {
-                            let _ = ww.with_webview(|webview| {
-                                use gtk::prelude::WidgetExt;
-                                let wv: webkit2gtk::WebView = webview.inner();
-                                if let Some(toplevel) = wv.toplevel() {
-                                    if let Some(gdk_win) = toplevel.window() {
-                                        gdk_win.set_shadow_width(12, 12, 12, 12);
-                                    }
-                                }
-                            });
-                        }
                     }
                 }
                 _ => {}
@@ -1141,7 +1107,6 @@ pub fn run() {
             commands::utility::set_report_plays,
             commands::utility::get_discord_status_text,
             commands::utility::set_discord_status_text,
-            commands::utility::install_current_webview_proxy_auth,
             commands::utility::get_proxy_settings,
             commands::utility::set_proxy_settings,
             commands::utility::get_proxy_status,

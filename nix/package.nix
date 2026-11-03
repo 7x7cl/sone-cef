@@ -7,16 +7,14 @@
   nodejs,
   cargo-tauri,
   pkg-config,
-  wrapGAppsHook3,
-  webkitgtk_4_1,
-  gtk3,
+  wrapGAppsHook4,
+  gtk4,
   librsvg,
   openssl,
   glib-networking,
   libsecret,
   alsa-lib,
   libpulseaudio,
-  libayatana-appindicator,
   gst_all_1,
   src,
 }:
@@ -46,19 +44,17 @@ rustPlatform.buildRustPackage (finalAttrs: {
     pnpm_11
     pnpmConfigHook
     pkg-config
-    wrapGAppsHook3
+    wrapGAppsHook4
   ];
 
   buildInputs = [
-    webkitgtk_4_1
-    gtk3
+    gtk4
     librsvg
     openssl
     glib-networking
     libsecret
     alsa-lib
     libpulseaudio
-    libayatana-appindicator
     gst_all_1.gstreamer
     gst_all_1.gst-plugins-base
     gst_all_1.gst-plugins-good

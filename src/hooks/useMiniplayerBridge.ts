@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { emitTo } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { invoke } from "@tauri-apps/api/core";
 import type { MiniplayerState } from "./useMiniplayerEmitter";
 
 export function useMiniplayerBridge() {
@@ -54,15 +53,8 @@ export function useMiniplayerBridge() {
       },
     );
 
-    // Install the WebKit proxy-auth handler on this frontend-created
-    // WebView before asking the main window to send track/artwork state.
-    void invoke("install_current_webview_proxy_auth")
-      .catch((error) => {
-        console.error("Failed to install miniplayer proxy auth:", error);
-      })
-      .finally(() => {
-        emitTo("main", "miniplayer-ready", {}).catch(() => {});
-      });
+    // Ask the main window to send track/artwork state.
+    emitTo("main", "miniplayer-ready", {}).catch(() => {});
 
     return () => {
       unlisten.then((fn) => fn());

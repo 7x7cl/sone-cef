@@ -5,9 +5,7 @@ FROM fedora:42
 RUN dnf install -y \
     gcc gcc-c++ make pkg-config \
     curl file wget \
-    webkit2gtk4.1-devel \
-    gtk3-devel \
-    libappindicator-gtk3-devel \
+    gtk4-devel \
     librsvg2-devel \
     openssl-devel \
     dbus-devel \

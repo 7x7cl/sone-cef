@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
+  "$schema": "https://schema.tauri.app/config/3",
   "productName": "SONE",
   "version": "0.23.0",
   "identifier": "io.github.lullabyX.sone",
@@ -38,9 +38,7 @@
     "linux": {
       "deb": {
         "depends": [
-          "libwebkit2gtk-4.1-0",
-          "libgtk-3-0",
-          "libayatana-appindicator3-1",
+          "libgtk-4-1",
           "libgstreamer1.0-0",
           "gstreamer1.0-plugins-base",
           "gstreamer1.0-plugins-good",
@@ -57,9 +55,7 @@
       },
       "rpm": {
         "depends": [
-          "webkit2gtk4.1",
-          "gtk3",
-          "libappindicator-gtk3",
+          "gtk4",
           "gstreamer1",
           "gstreamer1-plugins-base",
           "gstreamer1-plugins-good",

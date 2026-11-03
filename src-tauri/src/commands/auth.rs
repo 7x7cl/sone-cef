@@ -657,36 +657,21 @@ pub async fn start_pkce_login_window(app: AppHandle) -> Result<(), SoneError> {
             }
             true
         })
+        // The login page's DataDome bot check enumerates media devices. The
+        // runtime-wide profile preferences already disable capture; deny any
+        // other permission request too — login needs none.
+        .on_permission_request(|_webview, _kind| tauri::webview::PermissionResponse::Deny)
         .build()
         .map_err(|e| SoneError::NotConfigured(format!("Failed to create login window: {}", e)))?;
 
-    #[cfg(target_os = "linux")]
-    crate::webview_proxy_auth::install_window(&window);
-
-    // The login page's DataDome bot check enumerates media devices; inside
-    // Flatpak that makes WebKit request camera access via the portal. Login
-    // needs no media, so disable it and deny any other permission request.
-    #[cfg(target_os = "linux")]
-    {
-        use webkit2gtk::{PermissionRequestExt, SettingsExt, WebViewExt};
-        let authorize_url = url.to_string();
-        if let Err(e) = window.with_webview(move |webview| {
-            let wv: webkit2gtk::WebView = webview.inner();
-            if let Some(settings) = WebViewExt::settings(&wv) {
-                settings.set_enable_media_stream(false);
-            }
-            wv.connect_permission_request(|_wv, request| {
-                request.deny();
-                true
-            });
-            wv.load_uri(&authorize_url);
-        }) {
-            let _ = window.close();
-            return Err(SoneError::NotConfigured(format!(
-                "Failed to set up login window: {}",
-                e
-            )));
-        }
+    // The window starts on about:blank so the handlers are installed before
+    // the login page loads; navigate to the authorize URL now.
+    if let Err(e) = window.navigate(url) {
+        let _ = window.close();
+        return Err(SoneError::NotConfigured(format!(
+            "Failed to set up login window: {}",
+            e
+        )));
     }
 
     Ok(())
